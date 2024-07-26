@@ -90,9 +90,10 @@ const FooterCom = () => {
           />
           <div className="flex gap-6 mt-4 mb-4  sm:justify-center">
             <Footer.Icon
-              className="hover:text-cyan-600"
+              className="hover:text-cyan-600 "
               href="https://www.facebook.com/ahmad.shaar.9674?mibextid=ZbWKwL"
               icon={BsFacebook}
+              
             />
             <Footer.Icon
               className="hover:text-cyan-600"
