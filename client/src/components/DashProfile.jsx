@@ -2,6 +2,7 @@ import { Alert, Button, Modal, TextInput } from "flowbite-react";
 import { useState, useRef, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
+import { Link } from "react-router-dom";
 import { app } from "../firebase";
 import {
   getDownloadURL,
@@ -23,7 +24,7 @@ import {
 import { useDispatch } from "react-redux";
 
 const DashProfile = () => {
-  const { currentUser, error } = useSelector((state) => state.user);
+  const { currentUser, error ,loading} = useSelector((state) => state.user);
   const [imageFile, setImageFile] = useState(null);
   const [imageFileUrl, setImageFileUrl] = useState(null);
   const [imageFileUploadError, setImageFileUploadError] = useState(null);
@@ -53,6 +54,7 @@ const DashProfile = () => {
 
   const uploadImage = async () => {
     setimageUploading(true);
+    
     const storage = getStorage(app);
     const fileName = new Date().getTime() + imageFile.name;
     const storageRef = ref(storage, fileName);
@@ -228,9 +230,17 @@ const DashProfile = () => {
           placeholder="password"
           onChange={handleChange}
         />
-        <Button type="submit" gradientDuoTone={"purpleToBlue"} outline>
-          Update
+        <Button type="submit" gradientDuoTone={"purpleToBlue"} outline disabled={loading || imageUploading}>
+         {loading ? 'Loading' : 'Update'}
         </Button>
+        {currentUser.isAdmin && (
+          <Link to={'/create-post'}>
+          
+          <Button type="button" gradientDuoTone='purpleToPink' outline className="w-full" >
+              Create a post
+          </Button>
+          </Link>
+        )}
       </form>
       <div className="text-red-500 font-semibold flex justify-between mt-5">
         <span
