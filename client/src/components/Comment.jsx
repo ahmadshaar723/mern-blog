@@ -4,7 +4,7 @@ import moment from "moment";
 import { useSelector } from "react-redux";
 import { Button, Textarea } from "flowbite-react";
 
-const Comment = ({ comment, onLike, onEdit }) => {
+const Comment = ({ comment, onLike, onEdit,onDelete }) => {
   const [user, setUser] = useState({});
   const { currentUser } = useSelector((state) => state.user);
   const [isEditting, setisEditting] = useState(false);
@@ -31,16 +31,16 @@ const Comment = ({ comment, onLike, onEdit }) => {
 
   const handleSave = async () => {
     try {
-      const res=await fetch(`/api/comment/editComment/${comment._id}`,{
-        method:'PUT',
-        headers:{
-          'Content-Type':'application/json'
+      const res = await fetch(`/api/comment/editComment/${comment._id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
         },
-        body:JSON.stringify({content:editedContent})
-      })
-      if(res.ok){
-        setisEditting(false)
-        onEdit(comment,editedContent)
+        body: JSON.stringify({ content: editedContent }),
+      });
+      if (res.ok) {
+        setisEditting(false);
+        onEdit(comment, editedContent);
       }
     } catch (error) {
       console.log(error.message);
@@ -117,13 +117,22 @@ const Comment = ({ comment, onLike, onEdit }) => {
               </p>
               {currentUser &&
                 (currentUser._id === comment.userId || currentUser.isAdmin) && (
-                  <button
-                    type="button"
-                    className="text-gray-400 hover:text-blue-500"
-                    onClick={handleEdit}
-                  >
-                    Edit
-                  </button>
+                  <>
+                    <button
+                      type="button"
+                      className="text-gray-400 hover:text-blue-500"
+                      onClick={handleEdit}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      type="button"
+                      className="text-gray-400 hover:text-red-500"
+                      onClick={()=> onDelete(comment._id)}
+                    >
+                      Delete
+                    </button>
+                  </>
                 )}
             </div>
           </>
