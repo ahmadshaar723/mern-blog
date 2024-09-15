@@ -1,5 +1,5 @@
 import { Sidebar } from "flowbite-react";
-import { HiAnnotation, HiDocumentText, HiOutlineUserGroup, HiUser } from "react-icons/hi";
+import { HiAnnotation, HiChartPie, HiDocumentText, HiOutlineUserGroup, HiUser } from "react-icons/hi";
 import { PiSignOutBold } from "react-icons/pi";
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
@@ -39,6 +39,7 @@ const DashSidebar = () => {
     <Sidebar className="w-full md:w-56">
       <Sidebar.Items>
         <Sidebar.ItemGroup className="flex flex-col gap-1">
+          
           <Link to="/dashboard?tab=profile">
             <Sidebar.Item
               active={tab === "profile"}
@@ -50,6 +51,17 @@ const DashSidebar = () => {
               Profile
             </Sidebar.Item>
           </Link>
+          {currentUser.isAdmin && (
+            <Link to="/dashboard?tab=dash">
+            <Sidebar.Item
+              active={tab === "dash" || !tab}
+              icon={HiChartPie}
+              as="div"
+            >
+              Dashboard
+            </Sidebar.Item>
+          </Link>
+          )}
           {currentUser.isAdmin && (
             <Link to="/dashboard?tab=posts">
               <Sidebar.Item
@@ -73,6 +85,7 @@ const DashSidebar = () => {
             </Link>
           )}
           {currentUser.isAdmin && (
+            <>
             <Link to="/dashboard?tab=comments">
               <Sidebar.Item
                 active={tab === "comments"}
@@ -82,6 +95,8 @@ const DashSidebar = () => {
                 Comments
               </Sidebar.Item>
             </Link>
+            
+            </>
           )}
           <Sidebar.Item
             icon={PiSignOutBold}
