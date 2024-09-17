@@ -11,18 +11,40 @@ import {
 import { app } from "../firebase";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
-import {useNavigate ,useParams} from 'react-router-dom'
+import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 const UpdatePost = () => {
   const [file, setFile] = useState(null);
+  const { currentUser } = useSelector((state) => state.user);
   const [imageUploadProgress, setImageUploadProgress] = useState(null);
   const [imageUploadError, setImageUploadError] = useState(null);
   const [formData, setFormData] = useState({});
   const [publishError, setPublishError] = useState(null);
-  const navigate = useNavigate()
-  const {postId}=useParams();
-  const { currentUser } = useSelector((state) => state.user);
+  const navigate = useNavigate();
+  const { postId } = useParams();
+  console.log(formData);
+
+  useEffect(() => {
+    try {
+      const fetchPost = async () => {
+        const res = await fetch(`/api/post/getposts?postId=${postId}`);
+        const data = await res.json();
+        if (!res.ok) {
+          console.log(data.message);
+          setPublishError(data.message);
+          return;
+        }
+        if (res.ok) {
+          setPublishError(null);
+          setFormData(data.posts[0]);
+        }
+      };
+      fetchPost();
+    } catch (error) {
+      console.log(error.message);
+    }
+  }, []);
 
   const handleUploadImage = async () => {
     try {
@@ -30,6 +52,7 @@ const UpdatePost = () => {
         setImageUploadError("Please select an image");
         return;
       }
+      setImageUploadError(null)
       const storage = getStorage(app);
       const fileName = new Date().getTime() + "-" + file.name;
       const storageRef = ref(storage, fileName);
@@ -56,55 +79,37 @@ const UpdatePost = () => {
     } catch (error) {
       setImageUploadError("Image upload failed");
       setImageUploadProgress(null);
+      console.log(error.message);
+      
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`/api/post/updatepost/${formData._id}/${currentUser._id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+      const res = await fetch(
+        `/api/post/updatepost/${formData._id}/${currentUser._id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
       const data = await res.json();
       if (!res.ok) {
         setPublishError(data.message);
         return;
       }
-      if(res.ok){
+      if (res.ok) {
         setPublishError(null);
-        navigate(`/post/${data.slug}`)
+        navigate(`/post/${data.slug}`);
       }
     } catch (error) {
-      setPublishError('Something went wrong')
+      setPublishError("Something went wrong");
     }
   };
-
-  useEffect(()=>{
-    try{
-        const fetchPost = async () =>{
-            const res = await fetch(`/api/post/getposts?postId=${postId}`)
-            const data = await res.json();
-            if(!res.ok){
-                console.log(data.message);
-                setPublishError(data.message)
-                return
-            }
-            if(res.ok){
-                setPublishError(null)
-                setFormData(data.posts[0])
-            }
-        }
-        fetchPost();
-
-    }catch(error){
-
-    }
-    
-  },[postId])
 
   return (
     <div className="min-h-screen p-3 max-w-3xl mx-auto">
@@ -169,19 +174,22 @@ const UpdatePost = () => {
         )}
         <ReactQuill
           theme="snow"
+          
           placeholder="Write something..."
           className="h-72 mb-12"
-          required
-          onChange={(value) => {
-            setFormData({ ...formData, content: value });
+          onChange={(x) => {
+            setFormData({ ...formData, content: x });
           }}
-          value={formData.content}
+          required
         />
         <Button gradientDuoTone="purpleToPink" type="submit">
           Update post
         </Button>
         {publishError && (
-          <Alert className="mt-5" color='failure'> {publishError}</Alert>
+          <Alert className="mt-5" color="failure">
+            {" "}
+            {publishError}
+          </Alert>
         )}
       </form>
     </div>
