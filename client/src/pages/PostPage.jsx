@@ -51,7 +51,7 @@ const PostPage = () => {
     fetchRecent()
   }, []);
 
-  console.log(recentArticles)
+
 
   if (loading)
     return (
