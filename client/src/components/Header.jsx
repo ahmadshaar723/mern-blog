@@ -2,7 +2,7 @@ import { Avatar, Button, Dropdown, Navbar, TextInput } from "flowbite-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AiOutlineSearch } from "react-icons/ai";
 import { FaMoon, FaSun } from "react-icons/fa";
-import { useSelector,useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { toggleTheme } from "../redux/theme/themeSlice";
 import { signoutSuccess } from "../redux/user/userSlice";
 import { useEffect, useState } from "react";
@@ -10,18 +10,19 @@ import { useEffect, useState } from "react";
 const Header = () => {
   const path = useLocation().pathname;
   const { currentUser } = useSelector((state) => state.user);
-  const dispatch=useDispatch();
-  const {theme}=useSelector(state=>state.theme);
-  const [searchTerm, setSearchTerm] = useState('')
-  const location=useLocation()
-  const navigate=useNavigate()
-  useEffect(()=>{
-    const urlParams= new URLSearchParams(location.search)
-    const searchTermFromUrl = urlParams.get('searchTerm')
-    if(searchTermFromUrl){
-      setSearchTerm(searchTermFromUrl)
+  const dispatch = useDispatch();
+  const { theme } = useSelector((state) => state.theme);
+  const [searchTerm, setSearchTerm] = useState("");
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const searchTermFromUrl = urlParams.get("searchTerm");
+    if (searchTermFromUrl) {
+      setSearchTerm(searchTermFromUrl);
     }
-  },[location.search])
+  }, [location.search]);
   const handleSignout = async () => {
     try {
       const res = await fetch("/api/user/signout", {
@@ -31,21 +32,20 @@ const Header = () => {
       if (!res.ok) {
         console.log(data.message);
       } else {
-        dispatch(signoutSuccess())
+        dispatch(signoutSuccess());
       }
     } catch (error) {
       console.log(error.message);
     }
   };
 
-  const handleSubmit = (e) =>{
+  const handleSubmit = (e) => {
     e.preventDefault();
-    const urlParams= new URLSearchParams(location.search)
-    urlParams.set('searchTerm',searchTerm)
-    const searchQuery=urlParams.toString()
-    navigate(`/search?${searchQuery}`)
-
-  }
+    const urlParams = new URLSearchParams(location.search);
+    urlParams.set("searchTerm", searchTerm);
+    const searchQuery = urlParams.toString();
+    navigate(`/search?${searchQuery}`);
+  };
 
   return (
     <Navbar className="border-b-2">
@@ -65,22 +65,29 @@ const Header = () => {
           rightIcon={AiOutlineSearch}
           className="hidden lg:inline "
           value={searchTerm}
-          onChange={(e)=>setSearchTerm(e.target.value)}
+          onChange={(e) => setSearchTerm(e.target.value)}
         />
       </form>
-      <Button className="w-12 h-10 lg:hidden" color="gray" pill>
-        <AiOutlineSearch />
-      </Button>
+      <Link to={"/search"}>
+        <Button className="w-12 h-10 lg:hidden" color="gray" pill>
+          <AiOutlineSearch />
+        </Button>
+      </Link>
       <div className="flex gap-2 md:order-2">
-        <Button className="w-12 h-10  " color="gray" pill onClick={()=>dispatch(toggleTheme())}>
-          {theme === 'light' ? <FaMoon />:<FaSun />}
+        <Button
+          className="w-12 h-10  "
+          color="gray"
+          pill
+          onClick={() => dispatch(toggleTheme())}
+        >
+          {theme === "light" ? <FaMoon /> : <FaSun />}
         </Button>
         {currentUser ? (
           <Dropdown
             arrowIcon={false}
             inline
             label={
-              <Avatar alt="user" img={currentUser.profilePicture} rounded/>
+              <Avatar alt="user" img={currentUser.profilePicture} rounded />
             }
           >
             <Dropdown.Header>
@@ -105,21 +112,21 @@ const Header = () => {
         <Navbar.Toggle />
       </div>
       <Navbar.Collapse>
-        <Navbar.Link active={path === "/"} as={"div"}>
-          <Link to="/" className="text-base">
+        <Link to="/" className="text-base">
+          <Navbar.Link active={path === "/"} as={"div"}>
             Home
-          </Link>
-        </Navbar.Link>
-        <Navbar.Link active={path === "/about"} as={"div"}>
-          <Link to="/about" className="text-base">
+          </Navbar.Link>
+        </Link>
+        <Link to="/about" className="text-base">
+          <Navbar.Link active={path === "/about"} as={"div"}>
             About
-          </Link>
-        </Navbar.Link>
-        <Navbar.Link active={path === "/projects"} as={"div"}>
-          <Link to="/projects" className="text-base">
+          </Navbar.Link>
+        </Link>
+        <Link to="/projects" className="text-base">
+          <Navbar.Link active={path === "/projects"} as={"div"}>
             Projects
-          </Link>
-        </Navbar.Link>
+          </Navbar.Link>
+        </Link>
       </Navbar.Collapse>
     </Navbar>
   );
