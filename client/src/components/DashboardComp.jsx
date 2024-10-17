@@ -66,7 +66,7 @@ const DashboardComp = () => {
       fetchPosts();
       fetchComments();
     }
-  });
+  },[]);
 
   return (
     <div className="p-3 md:mx-auto">
